@@ -27,4 +27,38 @@
     <string name="hint_password_confirmation" translatable="false">Enter Your Password Confirmation</string>
     <string name="lbl_select_interest">Please select your interests:</string>
     <string name="lbl_welcome_user">Welcome Sopheak</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hint_name">Enter Your Name</string>
+    <string name="lbl_male">Male</string>
+    <string name="lbl_female">Female</string>
+    <string name="lbl_save_setting">Save Setting</string>
+    <string name="lbl_bottom_home" />
+    <string name="lbl_bottom_bookmark">Bookmark</string>
+    <string name="lbl_bottom_recommendation">Recommendation</string>
+    <string name="lbl_bottom_notification">Notification</string>
+    <string name="lbl_bottom_profile">Profile</string>
+    <string name="lbl_post_title">Your post title</string>
+    <string name="hint_post_title">Add post title</string>
+    <string name="hint_link">Add link</string>
+    <string name="hint_location">Add location</string>
+    <string name="hint_comment">Add comment</string>
+    <string name="lbl_save_post">Post Recommendation</string>
+    <string name="lbl_description">Your description</string>
+    <string name="hint_description">Add description</string>
+    <string name="lbl_left_profile_setting">Profile Setting</string>
+    <string name="lbl_saved_recommendation">Saved Recommendations</string>
+    <string name="lbl_left_logout">Logout</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+    <string name="title_profile_setting">Profile Setting</string>
+    <string name="done">done</string>
+    <string name="lbl_left_interest">Interest</string>
+    <string name="hint_enter_link">Enter link</string>
+    <string name="hint_new_rec_comment">Add your comment</string>
+    <string name="hint_new_rec_location">Add location</string>
+    <string name="lbl_new_rec_post">Post your recommendation</string>
+    <string name="lbl_select_post_category">What is your recommendation about?</string>
+    <string name="lbl_where_did_you_find">Where do you find this</string>
 </resources>

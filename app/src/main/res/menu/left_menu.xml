@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+    <item
+        android:id="@+id/left_profile_setting"
+        android:icon="@drawable/round_build_black_36dp"
+        android:title="@string/lbl_left_profile_setting" />
+
+    <item
+        android:id="@+id/left_interest"
+        android:icon="@drawable/round_star_rate_black_36dp"
+        android:title="@string/lbl_left_interest" />
+
+    <item
+        android:id="@+id/left_saved_recommendation"
+        android:icon="@drawable/baseline_bookmark_black_36"
+        android:title="@string/lbl_saved_recommendation"
+        />
+
+    <item
+        android:id="@+id/left_logout"
+        android:icon="@drawable/round_close_black_36dp"
+        android:title="@string/lbl_left_logout"
+        />
+</menu>

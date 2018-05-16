@@ -3,12 +3,13 @@
     <color name="colorPrimary">#f4511e</color>
     <color name="colorPrimaryDark">#e64a19</color>
     <!-- accent color: red -->
-    <color name="colorAccent">#0750c6</color>
+    <color name="colorAccent">#02db22</color>
     <!-- text color: white -->
     <color name="textColorPrimary">#FFFFFF</color>
     <color name="textColorSecondary">#9E9E9E</color>
 
     <color name="bgColor">#66000000</color>
     <color name="whiteTransparantHalf">#80ffffff</color>
+    <color name="gray">#e0e2e5</color>
 
 </resources>

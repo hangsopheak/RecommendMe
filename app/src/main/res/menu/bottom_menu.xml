@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <item
+        android:id="@+id/bottom_home"
+        android:icon="@mipmap/ic_home"
+        android:title="Home" />
+
+    <item
+        android:id="@+id/bottom_notification"
+        android:icon="@mipmap/ic_notification"
+        android:title="@string/lbl_bottom_notification"
+        />
+
+    <item
+        android:id="@+id/bottom_profile"
+        android:icon="@mipmap/ic_profile"
+        android:title="@string/lbl_bottom_profile"
+        />
+</menu>
