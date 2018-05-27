@@ -20,9 +20,7 @@ public class WebContentTask implements Callable<WebContent> {
     protected String url;
 
     public WebContentTask(String url){
-        if(!url.contains("http://") && !url.contains("https://")){
-            url = "http://" + url;
-        }
+
         this.url = url;
     }
 
@@ -30,7 +28,10 @@ public class WebContentTask implements Callable<WebContent> {
     public WebContent call() throws Exception {
         Document document = null;
         try {
-            document = Jsoup.connect(this.url).get();
+            String myUserAgent = "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0";
+            document = Jsoup.connect(url).
+                    userAgent(myUserAgent).referrer("http://www.google.com").get();
+            document.toString();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -51,7 +52,7 @@ public class WebContentTask implements Callable<WebContent> {
 
     private String getDescriptions(Document document){
         List<String> descriptionSelectors = new ArrayList<>();
-        descriptionSelectors.add("meta[property=og-description]");
+        descriptionSelectors.add("meta[property=og:description]");
         descriptionSelectors.add("meta[name=twitter:description]");
         descriptionSelectors.add("meta[name=description]");
         for(String selector:descriptionSelectors){
@@ -65,13 +66,16 @@ public class WebContentTask implements Callable<WebContent> {
 
     private String getTitle(Document document){
         List<String> selectors = new ArrayList<>();
-        selectors.add("meta[property=og-title]");
+        selectors.add("meta[property=og:title]");
         selectors.add("meta[name=twitter:title]");
         String title = null;
         for(String selector:selectors){
             Element element = document.select(selector).first();
             if(element == null) continue;
-            else title = element.attr("content");
+            else{
+                title = element.attr("content");
+                break;
+            }
         }
 
         if(title == null) title = document.title();
@@ -79,25 +83,41 @@ public class WebContentTask implements Callable<WebContent> {
     }
 
     private String getImageUrl(Document document){
+        String metaImage = null;
         List<String> selectors = new ArrayList<>();
-        selectors.add("meta[property=og-image]");
+        selectors.add("meta[property=og:image]");
         selectors.add("meta[name=twitter:image]");
-        String url = null;
+
+
+
         for(String selector:selectors){
             Element element = document.select(selector).first();
             if(element == null) continue;
-            else url = element.attr("content");
-        }
-
-        if(url == null){
-            Elements images = document.select("img");
-            List<Uri> imageUri = new ArrayList<>();
-            for(Element image:images){
-                url = image.absUrl("src");
+            else {
+                metaImage = element.attr("content");
                 break;
             }
         }
 
-        return url;
+        if(metaImage == null){
+            Elements images = document.select("img");
+            List<Uri> imageUri = new ArrayList<>();
+            for(Element image:images){
+                metaImage = image.absUrl("src");
+                break;
+            }
+        }
+
+        return metaImage;
+    }
+
+    private class MetaContent{
+        public String attribute;
+        public String value;
+
+        public MetaContent(String attribute, String value) {
+            this.attribute = attribute;
+            this.value = value;
+        }
     }
 }

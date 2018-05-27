@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyRecommendation</string>
+    <string name="app_name">RecommendMe</string>
     <string name="title_activity_login">Sign in</string>
 
     <!-- Strings related to login -->
@@ -40,7 +40,7 @@
     <string name="lbl_bottom_notification">Notification</string>
     <string name="lbl_bottom_profile">Profile</string>
     <string name="lbl_post_title">Your post title</string>
-    <string name="hint_post_title">Add post title</string>
+    <string name="hint_post_title">Add recommendation title</string>
     <string name="hint_link">Add link</string>
     <string name="hint_location">Add location</string>
     <string name="hint_comment">Add comment</string>
@@ -59,6 +59,19 @@
     <string name="hint_new_rec_comment">Add your comment</string>
     <string name="hint_new_rec_location">Add location</string>
     <string name="lbl_new_rec_post">Post your recommendation</string>
-    <string name="lbl_select_post_category">What is your recommendation about?</string>
-    <string name="lbl_where_did_you_find">Where do you find this</string>
+    <string name="lbl_select_post_category">What is your recommendation about?*</string>
+    <string name="lbl_where_did_you_find">Where do you find this? *</string>
+    <string name="lbl_by_link">By Website</string>
+    <string name="lbl_by_location">By Location</string>
+    <string name="lbl_post_category">Your recommendation is about? *</string>
+    <string name="lbl_post_type">Where do you find it?*</string>
+    <string name="lbl_website_url">Website URL</string>
+    <string name="lbl_pick_location">Please pick the location *</string>
+    <string name="lbl_recommendation_title">Your recommendation Title *</string>
+    <string name="lbl_rec_description">Recommendation description *</string>
+    <string name="lbl_your_comment">What is your idea about this recommendation?</string>
+    <string name="new_recommendation">New Recommendation</string>
+    <string name="please_select_category">Please select category</string>
+    <string name="title_activity_map">Map</string>
+    <string name="lbl_bottom_saved">Saved</string>
 </resources>

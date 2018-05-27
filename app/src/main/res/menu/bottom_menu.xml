@@ -5,18 +5,26 @@
 
     <item
         android:id="@+id/bottom_home"
-        android:icon="@mipmap/ic_home"
+        android:icon="@drawable/baseline_home_black_36"
         android:title="Home" />
 
     <item
+        android:id="@+id/bottom_save"
+        android:icon="@drawable/baseline_class_black_36"
+        android:title="@string/lbl_bottom_saved"
+        />
+
+    <item
         android:id="@+id/bottom_notification"
-        android:icon="@mipmap/ic_notification"
+        android:icon="@drawable/baseline_notifications_black_36"
         android:title="@string/lbl_bottom_notification"
         />
 
     <item
         android:id="@+id/bottom_profile"
-        android:icon="@mipmap/ic_profile"
+        android:icon="@drawable/baseline_person_black_36"
         android:title="@string/lbl_bottom_profile"
         />
+
+
 </menu>

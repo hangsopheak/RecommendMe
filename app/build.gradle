@@ -26,7 +26,9 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     implementation 'com.google.firebase:firebase-auth:11.8.0'
     implementation 'com.google.firebase:firebase-firestore:11.8.0'
-    implementation 'com.google.firebase:firebase-storage:11.8.0'
+    implementation 'com.google.android.gms:play-services-maps:11.8.0'
+    implementation 'com.google.firebase:firebase-messaging:11.8.0'
+    implementation 'com.android.support:support-v4:27.1.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -39,6 +41,8 @@ dependencies {
     compile 'id.zelory:compressor:2.1.0'
     compile 'org.jsoup:jsoup:1.10.2'
     implementation 'com.google.android.gms:play-services:11.8.0'
+    compile 'com.chootdev:timezago:1.1.8'
+    compile 'com.aurelhubert:ahbottomnavigation:2.1.0'
 
 }
 

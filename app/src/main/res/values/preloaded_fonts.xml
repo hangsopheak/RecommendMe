@@ -4,5 +4,8 @@
         <item>@font/chivo</item>
         <item>@font/gafata</item>
         <item>@font/lalezar</item>
+        <item>@font/lato</item>
+        <item>@font/lato_bold</item>
+        <item>@font/lato_thin</item>
     </array>
 </resources>

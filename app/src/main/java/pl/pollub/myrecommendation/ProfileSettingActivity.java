@@ -63,7 +63,7 @@ public class ProfileSettingActivity extends AppCompatActivity implements View.On
 
     private boolean isProfilePictureChanged = false;
     private String userId;
-    private String sex = "M";
+    private String sex;
     private List<String> interestedCategories = new ArrayList<>();
     private boolean isFromMain = false;
 
@@ -98,7 +98,11 @@ public class ProfileSettingActivity extends AppCompatActivity implements View.On
         ivProfilePicture.setOnClickListener(this);
         btnSave.setOnClickListener(this);
         rgSexGroup.setOnCheckedChangeListener(this);
-        rgSexGroup.check(R.id.radioMale);
+        if(!isFromMain){
+            rgSexGroup.check(R.id.radioMale);
+            sex = User.SEX_MALE;
+        }
+
 
         // display account info
         loadProfile();
@@ -113,9 +117,11 @@ public class ProfileSettingActivity extends AppCompatActivity implements View.On
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
                     if(task.getResult().exists()){
-                        // Toast.makeText(SetupActivity.this, "Data exist", Toast.LENGTH_SHORT).show();
                         String name = task.getResult().getString("name");
                         String profilePicture = task.getResult().getString("profile_picture");
+                        sex = task.getResult().getString("sex");
+                        if(sex.equals(User.SEX_MALE)) rgSexGroup.check(R.id.radioMale);
+                        else rgSexGroup.check(R.id.radioFemale);
                         interestedCategories = (List<String>) task.getResult().get("interested_categories");
                         imageURI = Uri.parse(profilePicture);
                         etName.setText(name);
@@ -134,21 +140,11 @@ public class ProfileSettingActivity extends AppCompatActivity implements View.On
         });
     }
 
-
-    private void bringPicturePicker() {
-        CropImage.activity()
-                .setGuidelines(CropImageView.Guidelines.ON)
-                .setAspectRatio(1,1)
-                .setMinCropResultSize(100,100)
-                .setMaxCropResultSize(2500,2500)
-                .start(ProfileSettingActivity.this);
-    }
-
     @Override
     public void onClick(View view) {
         switch(view.getId()){
             case R.id.profileSettingImage:
-                pickImage();
+                MyUtil.pickImage(ProfileSettingActivity.this, 1, 1);
                 break;
             case R.id.btnProfileSettingSave:
                 save();
@@ -222,21 +218,6 @@ public class ProfileSettingActivity extends AppCompatActivity implements View.On
                 }) ;
     }
 
-
-    private void pickImage() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            if(ContextCompat.checkSelfPermission(ProfileSettingActivity.this,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-                ActivityCompat.requestPermissions(ProfileSettingActivity.this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
-            }else{
-                bringPicturePicker();
-            }
-        }else{
-            bringPicturePicker();
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -280,21 +261,19 @@ public class ProfileSettingActivity extends AppCompatActivity implements View.On
         }
     }
 
-
     @Override
     public void onCheckedChanged(RadioGroup radioGroup, int i) {
-        rgSexGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-        {
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch(checkedId){
-                    case R.id.radioMale:
-                        sex = User.SEX_MALE;
-                        break;
-                    case R.id.radioFemale:
-                        sex = User.SEX_FEMALE;
-                        break;
-                }
-            }
-        });
+        switch(i){
+            case R.id.radioMale:
+                sex = User.SEX_MALE;
+                Toast.makeText(this, sex, Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.radioFemale:
+                sex = User.SEX_FEMALE;
+                Toast.makeText(this, sex, Toast.LENGTH_SHORT).show();
+                break;
+
+        }
+
     }
 }

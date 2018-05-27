@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".DetailRecommendationActivity"
+    >
+    <android.support.constraint.ConstraintLayout
+
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/ivDetailRecProfilePicture"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:src="@android:color/darker_gray"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvDetailRecUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="Sopheak Hang"
+        android:textColor="@android:color/background_dark"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/ivDetailRecProfilePicture"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvDetailRecCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:text="Article"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@+id/ivDetailRecProfilePicture"
+        app:layout_constraintTop_toBottomOf="@+id/tvDetailRecUserName" />
+
+        <ImageView
+            android:id="@+id/ivDetailRecLink"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDetailRecIdea"
+            app:srcCompat="@drawable/baseline_link_black_36dp" />
+
+        <ImageView
+            android:id="@+id/ivDetailRecPin"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ivDetailRecLink"
+            app:srcCompat="@drawable/baseline_pin_drop_black_36dp" />
+
+        <TextView
+            android:id="@+id/tvDetailRecLocationLink"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="10dp"
+            android:text="http://pollub.pl"
+            android:textColor="@color/cast_libraries_material_featurehighlight_outer_highlight_default_color"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ivDetailRecLocationLink"
+            app:layout_constraintTop_toBottomOf="@+id/tvDetailRecPhone" />
+
+        <TextView
+            android:id="@+id/tvDetailRecAddress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="11dp"
+            android:text="Nadbystryzka, DS4, Lublin"
+            android:textColor="@color/cast_libraries_material_featurehighlight_outer_highlight_default_color"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ivDetailRecPin"
+            app:layout_constraintTop_toBottomOf="@+id/tvDetailRecWebsite" />
+
+    <ImageView
+        android:id="@+id/ivDetailRecPhone"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivDetailRecPin"
+        app:srcCompat="@drawable/baseline_phone_black_36dp" />
+
+    <TextView
+        android:id="@+id/tvDetailRecWebsite"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="http://google.com"
+        android:textColor="@color/cast_libraries_material_featurehighlight_outer_highlight_default_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/ivDetailRecLink"
+        app:layout_constraintTop_toTopOf="@+id/ivDetailRecLink" />
+
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteY="258dp" />
+
+        <ImageView
+            android:id="@+id/ivDetailRecLocationLink"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ivDetailRecPhone"
+            app:srcCompat="@drawable/baseline_link_black_36dp" />
+
+        <TextView
+            android:id="@+id/tvDetailRecDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Description"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ivDetailRecImage" />
+
+        <TextView
+            android:id="@+id/tvDetailRecPhone"
+            android:layout_width="0dp"
+            android:layout_height="19dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="13dp"
+            android:text="+855 70 527 422"
+            android:textColor="@color/cast_libraries_material_featurehighlight_outer_highlight_default_color"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ivDetailRecPhone"
+            app:layout_constraintTop_toBottomOf="@+id/tvDetailRecAddress" />
+
+        <ImageView
+            android:id="@+id/ivDetailRecImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDetailRecTitle"
+            app:srcCompat="@android:color/darker_gray" />
+
+    <TextView
+        android:id="@+id/tvDetailRecTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="Title"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivDetailRecProfilePicture" />
+
+        <TextView
+            android:id="@+id/tvDetailRecIdea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Idea"
+            android:textColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDetailRecDescription" />
+
+    <ImageView
+        android:id="@+id/ivDetailRecSave"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDetailRecSaveCount"
+        app:srcCompat="@drawable/baseline_bookmark_border_black_36" />
+
+    <ImageView
+        android:id="@+id/ivDetailRecComment"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toEndOf="@+id/lblDetailRecSave"
+        app:layout_constraintTop_toBottomOf="@+id/tvDetailRecCommentCount"
+        app:srcCompat="@drawable/outline_mode_comment_black_36" />
+
+    <TextView
+        android:id="@+id/tvDetailRecSaveCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="5 Saves"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDetailRecLocationLink" />
+
+    <TextView
+        android:id="@+id/tvDetailRecCommentCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="3 Comments"
+        app:layout_constraintStart_toEndOf="@+id/tvDetailRecSaveCount"
+        app:layout_constraintTop_toTopOf="@+id/tvDetailRecSaveCount" />
+
+    <TextView
+        android:id="@+id/lblDetailRecSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
+        android:text="SAVE"
+        app:layout_constraintStart_toEndOf="@+id/ivDetailRecSave"
+        app:layout_constraintTop_toBottomOf="@+id/tvDetailRecCommentCount" />
+
+    <TextView
+        android:id="@+id/lblDetailRecComment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
+        android:text="COMMENT"
+        app:layout_constraintStart_toEndOf="@+id/ivDetailRecComment"
+        app:layout_constraintTop_toBottomOf="@+id/tvDetailRecCommentCount" />
+
+</android.support.constraint.ConstraintLayout>
+</ScrollView>
+
+

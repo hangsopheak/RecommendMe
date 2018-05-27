@@ -11,12 +11,13 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -58,8 +59,32 @@
 
         <activity
             android:name=".NewRecommendationActivity"
+            android:label="@string/new_recommendation"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppThemeActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+                <data android:mimeType="image/*" />
+                <data android:mimeType="video/*" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".DetailRecommendationActivity"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/AppThemeActionBar" />
-        <activity android:name=".PostCategoryActivity"></activity>
+        <activity
+            android:name=".WebViewActivity"
+            android:parentActivityName=".DetailRecommendationActivity"
+            android:theme="@style/AppThemeFull" />
+        <activity
+            android:name=".MapActivity"
+            android:label="@string/title_activity_map"
+            android:parentActivityName=".MapActivity"
+            ></activity>
     </application>
 
 </manifest>

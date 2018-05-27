@@ -42,4 +42,21 @@ public class Category {
     public void setIcon(String icon) {
         this.icon = icon;
     }
+
+    //to display object as a string in spinner
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Category){
+            Category c = (Category ) obj;
+            if(c.getName().equals(name) && c.getId()== id ) return true;
+        }
+
+        return false;
+    }
+
 }

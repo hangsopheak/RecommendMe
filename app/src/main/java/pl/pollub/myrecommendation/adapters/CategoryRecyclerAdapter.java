@@ -71,7 +71,6 @@ public class CategoryRecyclerAdapter extends RecyclerView.Adapter<CategoryRecycl
         mFireStore = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
-
     }
 
     @Override

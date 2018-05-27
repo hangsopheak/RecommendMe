@@ -5,18 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".LoginActivity"
-    android:background="@drawable/bg"
+    android:background="@drawable/drawable_gradient_animation_list"
     >
 
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="-2dp"
-        android:background="@color/bgColor"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+
 
         <EditText
             android:id="@+id/etEmail"
@@ -25,8 +17,8 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="40dp"
-            android:backgroundTint="@android:color/white"
-            android:backgroundTintMode="src_over"
+            android:backgroundTint="@color/colorPrimary"
+            android:backgroundTintMode="src_in"
             android:ems="10"
             android:fontFamily="@font/gafata"
             android:hint="@string/hint_email"
@@ -35,7 +27,7 @@
             android:paddingTop="15dp"
             android:textColor="@android:color/white"
             android:textColorHint="@color/whiteTransparantHalf"
-            android:textSize="18dp"
+            android:textSize="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView3" />
@@ -47,8 +39,8 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:backgroundTint="@android:color/white"
-            android:backgroundTintMode="src_over"
+            android:backgroundTint="@color/colorPrimary"
+            android:backgroundTintMode="src_in"
             android:ems="10"
             android:fontFamily="@font/gafata"
             android:hint="@string/hint_password"
@@ -57,7 +49,7 @@
             android:paddingTop="15dp"
             android:textColor="@android:color/white"
             android:textColorHint="@color/whiteTransparantHalf"
-            android:textSize="18dp"
+            android:textSize="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -70,11 +62,12 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:background="@color/colorPrimary"
+            android:background="@android:color/white"
             android:padding="15dp"
             android:text="@string/lbl_login"
-            android:textColor="@android:color/white"
-            android:textSize="18dp"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
+            android:textSize="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/etPassword" />
@@ -90,7 +83,7 @@
             android:padding="15dp"
             android:text="@string/lbl_signup"
             android:textColor="@android:color/black"
-            android:textSize="18dp"
+            android:textSize="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -126,5 +119,5 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="invisible" />
 
-    </android.support.constraint.ConstraintLayout>
+
 </android.support.constraint.ConstraintLayout>
