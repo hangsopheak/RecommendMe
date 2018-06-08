@@ -22,26 +22,26 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.List;
 
 import pl.pollub.myrecommendation.R;
-import pl.pollub.myrecommendation.models.Notification;
+import pl.pollub.myrecommendation.models.Comment;
 import pl.pollub.myrecommendation.utils.MyUtil;
 
-public class NotificationRecyclerAdapter extends RecyclerView.Adapter<NotificationRecyclerAdapter.ViewHolder> {
+public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecyclerAdapter.ViewHolder> {
 
-    public List<Notification> notificationList;
+    public List<Comment> commentList;
     private Context mContext;
     private FirebaseAuth mAuth;
     private FirebaseFirestore mFireStore;
     private OnItemClickListener listener;
 
-    public NotificationRecyclerAdapter(List<Notification> notificationList){
-        this.notificationList = notificationList;
+    public CommentRecyclerAdapter(List<Comment> commentList){
+        this.commentList = commentList;
     }
 
     @NonNull
     @Override
-    public NotificationRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public CommentRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         mContext = parent.getContext();
-        View view = LayoutInflater.from(mContext).inflate(R.layout.notification_item, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.comment_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -57,11 +57,11 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
 
 
     @Override
-    public void onBindViewHolder(@NonNull final NotificationRecyclerAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final CommentRecyclerAdapter.ViewHolder holder, final int position) {
         holder.setIsRecyclable(false);
         mFireStore = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
-        holder.bindData(notificationList.get(position));
+        holder.bindData(commentList.get(position));
 
 
     }
@@ -70,43 +70,43 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
 
     @Override
     public int getItemCount() {
-        return this.notificationList.size();
+        return this.commentList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private ImageView ivNotificationProfilePicture;
-        private TextView tvNotificationUserName, tvNotificationContent, tvNotificationTimeAgo;
+        private ImageView ivCommentProfilePicture;
+        private TextView tvCommentUserName, tvCommentContent, tvCommentTimeAgo;
         private View mView;
-        private CardView cvNotification;
+        private CardView cvComment;
 
         public ViewHolder(final View itemView) {
             super(itemView);
             mView = itemView;
 
-            ivNotificationProfilePicture = mView.findViewById(R.id.ivCommentItemProfilePicture);
-            tvNotificationUserName = mView.findViewById(R.id.tvCommentItemUserName);
-            tvNotificationContent = mView.findViewById(R.id.tvCommentItemContent);
-            tvNotificationTimeAgo = mView.findViewById(R.id.tvNotificationTimeAgo);
-            cvNotification = mView.findViewById(R.id.cvNotification);
-
-            cvNotification.setOnClickListener(this);
+            ivCommentProfilePicture = mView.findViewById(R.id.ivCommentItemProfilePicture);
+            tvCommentUserName = mView.findViewById(R.id.tvCommentItemUserName);
+            tvCommentContent = mView.findViewById(R.id.tvCommentItemContent);
+            tvCommentTimeAgo = mView.findViewById(R.id.tvCommentItemTimeAgo);
+            cvComment = mView.findViewById(R.id.cvComment);
 
         }
 
-        public void bindData(Notification notification){
-            bindUser(notification.getSenderId());
-            bindNotification(notification);
+        public void bindData(Comment comment){
+            bindUser(comment.getUserId());
+            bindComment(comment);
 
         }
 
-        private void bindNotification(Notification notification) {
-            tvNotificationContent.setText(notification.getContent());
+        private void bindComment(Comment comment) {
+            tvCommentContent.setText(comment.getContent());
             String strTimeAgo = "just now";
-            if(notification.getTimestamp() != null){
-                strTimeAgo = MyUtil.getTimeAgo(notification.getTimestamp().getTime(), mContext);
+            if(comment.getTimestamp() != null){
+                strTimeAgo = MyUtil.getTimeAgo(comment.getTimestamp().getTime(), mContext);
+
             }
-            tvNotificationTimeAgo.setText(strTimeAgo);
+            tvCommentTimeAgo.setText(strTimeAgo);
+
         }
 
 
@@ -116,10 +116,10 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if(task.getResult().exists() && task.isSuccessful()){
                         DocumentSnapshot data = task.getResult();
-                        tvNotificationUserName.setText(data.get("name").toString());
+                        tvCommentUserName.setText(data.get("name").toString());
                         RequestOptions placeholderOption = new RequestOptions().placeholder(R.color.gray);
                         Glide.with(mContext).applyDefaultRequestOptions(placeholderOption)
-                                .load(Uri.parse(data.get("profile_picture").toString())).into(ivNotificationProfilePicture);
+                                .load(Uri.parse(data.get("profile_picture").toString())).into(ivCommentProfilePicture);
                     }
                 }
             });

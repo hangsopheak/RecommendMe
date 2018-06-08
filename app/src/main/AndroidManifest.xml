@@ -83,8 +83,12 @@
         <activity
             android:name=".MapActivity"
             android:label="@string/title_activity_map"
-            android:parentActivityName=".MapActivity"
-            ></activity>
+            android:parentActivityName=".MapActivity" />
+        <activity android:name=".CommentActivity"
+            android:label="Comment"
+            android:theme="@style/AppThemeActionBar"
+            android:parentActivityName=".MainActivity"
+            />
     </application>
 
 </manifest>

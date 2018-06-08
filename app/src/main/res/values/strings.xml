@@ -74,4 +74,7 @@
     <string name="please_select_category">Please select category</string>
     <string name="title_activity_map">Map</string>
     <string name="lbl_bottom_saved">Saved</string>
+    <string name="lbl_comment_post">Post</string>
+    <string name="hint_add_comment">Add Comment  </string>
+    <string name="post_comment">Post</string>
 </resources>

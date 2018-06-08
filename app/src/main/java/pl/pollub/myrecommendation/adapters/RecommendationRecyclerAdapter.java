@@ -123,6 +123,7 @@ public class RecommendationRecyclerAdapter extends RecyclerView.Adapter<Recommen
             bindUser(recommendation.getUserId());
             bindCategory(recommendation.getCategoryId());
             bindCountSaveUser(recommendation.getId());
+            bindCountComment(recommendation.getId());
             bindRecommendation(recommendation);
 
         }
@@ -187,8 +188,37 @@ public class RecommendationRecyclerAdapter extends RecyclerView.Adapter<Recommen
                     }
                     String saveCountLabel = Integer.toString(saveCountNumber);
                     if(saveCountNumber > 1)  saveCountLabel = saveCountLabel + " Saves";
-                    else  saveCountLabel = saveCountLabel + " Saves";
+                    else  saveCountLabel = saveCountLabel + " Save";
                     tvSaveCount.setText(saveCountLabel);
+                }
+            });
+
+            mFireStore.collection("Recommendation/" + recommendationId + "/saved_users").document(currentUserId)
+                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                            if(documentSnapshot.exists()){
+                                ivSave.setImageDrawable(mContext.getDrawable(R.drawable.baseline_bookmark_black_36));
+                            }else{
+                                ivSave.setImageDrawable(mContext.getDrawable(R.drawable.baseline_bookmark_border_black_36));
+                            }
+                        }
+                    });
+        }
+
+        private void bindCountComment(String recommendationId){
+            // get comments
+            mFireStore.collection("Recommendation/" + recommendationId + "/comments").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                    int commentCount = 0;
+                    if(documentSnapshots != null){
+                        commentCount = documentSnapshots.size();
+                    }
+                    String commentCountLabel = Integer.toString(commentCount);
+                    if(commentCount > 1)  commentCountLabel = commentCountLabel + " Comments";
+                    else  commentCountLabel = commentCountLabel + " Comment";
+                    tvCommentCount.setText(commentCountLabel);
                 }
             });
 

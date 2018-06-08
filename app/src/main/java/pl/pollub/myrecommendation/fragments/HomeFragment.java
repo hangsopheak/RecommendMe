@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import pl.pollub.myrecommendation.CommentActivity;
 import pl.pollub.myrecommendation.DetailRecommendationActivity;
 import pl.pollub.myrecommendation.MainActivity;
 import pl.pollub.myrecommendation.R;
@@ -65,6 +66,8 @@ public class HomeFragment extends Fragment {
 
     private MainActivity mainActivity;
     public HomeFragment() { }
+
+    @SuppressLint("ValidFragment")
     public HomeFragment(String profileUserId){
         this.profileUserId = profileUserId;
     }
@@ -164,7 +167,15 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onCommentClickListener(View itemView, int position) {
-
+                Intent intent = new Intent(getActivity(), CommentActivity.class);
+                String recommendationId = null;
+                if(mainActivity.getFragmentType() == MainActivity.FRAGMENT_TYPE_SAVED){
+                    recommendationId = savedRecommendationList.get(position).getId();
+                }else{
+                    recommendationId = recommendationList.get(position).getId();
+                }
+                intent.putExtra("recommendation_id", recommendationId);
+                startActivity(intent);
             }
         });
         return view;
