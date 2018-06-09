@@ -52,7 +52,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvDetailRecIdea"
+            app:layout_constraintTop_toBottomOf="@+id/tvRecDetailTimeAgo"
             app:srcCompat="@drawable/baseline_link_black_36dp" />
 
         <ImageView
@@ -262,7 +262,18 @@
         app:layout_constraintStart_toEndOf="@+id/ivDetailRecComment"
         app:layout_constraintTop_toBottomOf="@+id/tvDetailRecCommentCount" />
 
-</android.support.constraint.ConstraintLayout>
+        <TextView
+            android:id="@+id/tvRecDetailTimeAgo"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="just now"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDetailRecIdea" />
+
+    </android.support.constraint.ConstraintLayout>
 </ScrollView>
 
 

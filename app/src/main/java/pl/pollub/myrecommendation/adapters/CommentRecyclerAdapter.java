@@ -32,9 +32,11 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
     private FirebaseAuth mAuth;
     private FirebaseFirestore mFireStore;
     private OnItemClickListener listener;
+    private String currentUserId;
 
-    public CommentRecyclerAdapter(List<Comment> commentList){
+    public CommentRecyclerAdapter(List<Comment> commentList, String currentUserId){
         this.commentList = commentList;
+        this.currentUserId = currentUserId;
     }
 
     @NonNull
@@ -47,7 +49,7 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
 
     // Define listener member variable
     public interface OnItemClickListener{
-        void onCardViewClickListener(View itemView, int position);
+        void onDeleteClickListener(View itemView, int position);
     }
 
     // Define the method that allows the parent activity or fragment to define the listener
@@ -75,7 +77,7 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private ImageView ivCommentProfilePicture;
+        private ImageView ivCommentProfilePicture, ivCommentDelete;
         private TextView tvCommentUserName, tvCommentContent, tvCommentTimeAgo;
         private View mView;
         private CardView cvComment;
@@ -85,10 +87,13 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
             mView = itemView;
 
             ivCommentProfilePicture = mView.findViewById(R.id.ivCommentItemProfilePicture);
+            ivCommentDelete = mView.findViewById(R.id.ivCommentDelete);
             tvCommentUserName = mView.findViewById(R.id.tvCommentItemUserName);
             tvCommentContent = mView.findViewById(R.id.tvCommentItemContent);
             tvCommentTimeAgo = mView.findViewById(R.id.tvCommentItemTimeAgo);
             cvComment = mView.findViewById(R.id.cvComment);
+
+            ivCommentDelete.setOnClickListener(this);
 
         }
 
@@ -106,6 +111,11 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
 
             }
             tvCommentTimeAgo.setText(strTimeAgo);
+            if(comment.getUserId().equals(currentUserId)){
+                ivCommentDelete.setVisibility(View.VISIBLE);
+            }else{
+                ivCommentDelete.setVisibility(View.GONE);
+            }
 
         }
 
@@ -129,11 +139,11 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
         @Override
         public void onClick(View view) {
             switch (view.getId()){
-                case R.id.cvNotification:
+                case R.id.ivCommentDelete:
                     if(listener != null){
                         int position = getAdapterPosition();
                         if(position != RecyclerView.NO_POSITION){
-                            listener.onCardViewClickListener(itemView, position);
+                            listener.onDeleteClickListener(itemView, position);
                         }
                     }
                     break;

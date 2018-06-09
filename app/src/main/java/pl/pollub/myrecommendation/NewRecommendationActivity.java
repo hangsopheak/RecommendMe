@@ -342,7 +342,7 @@ public class NewRecommendationActivity extends AppCompatActivity implements
             Toast.makeText(this, "Please enter all require fields!", Toast.LENGTH_SHORT).show();
             return;
         }
-
+        btnPost.setEnabled(false);
         if(!URLUtil.isHttpUrl(imageUri.toString()) && !URLUtil.isHttpsUrl(imageUri.toString())){
             byte[] thumbData = MyUtil.getCompressedImage(NewRecommendationActivity.this,
                     imageUri, 400, 400,40);
@@ -367,6 +367,7 @@ public class NewRecommendationActivity extends AppCompatActivity implements
                         String error = task.getException().getMessage();
                         Toast.makeText(NewRecommendationActivity.this, "Storage Error: " + error, Toast.LENGTH_LONG).show();
                         progressBar.setVisibility(View.INVISIBLE);
+                        btnPost.setEnabled(true);
                     }
 
                 }
@@ -419,6 +420,8 @@ public class NewRecommendationActivity extends AppCompatActivity implements
                     String error = task.getException().getMessage();
                     Toast.makeText(NewRecommendationActivity.this, "FireStore Error:  " + error, Toast.LENGTH_SHORT).show();
                 }
+
+                btnPost.setEnabled(true);
             }
         });
     }
@@ -446,6 +449,8 @@ public class NewRecommendationActivity extends AppCompatActivity implements
                             Toast.makeText(NewRecommendationActivity.this, "FireStore Error: " + error, Toast.LENGTH_LONG).show();
                             progressBar.setVisibility(View.INVISIBLE);
                         }
+
+                        btnPost.setEnabled(true);
                     }
                 }) ;
     }

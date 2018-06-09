@@ -3,8 +3,8 @@ package pl.pollub.myrecommendation.models;
 import java.util.Date;
 
 public class Notification {
-    protected static final int TYPE_SAVE = 1;
-    protected static final int TYPE_COMMENT = 2;
+    public static final int TYPE_SAVE = 1;
+    public static final int TYPE_COMMENT = 2;
     protected String id;
     protected String senderId;
     protected String recommendationId;
@@ -19,6 +19,8 @@ public class Notification {
         String content = null;
         if(type == TYPE_SAVE){
             content = "saved your recommendation";
+        }else if(type == TYPE_COMMENT){
+            content = "commented on recommendation";
         }
         return content;
     }

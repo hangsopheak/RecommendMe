@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 homeCategoryRecyclerAdapter.notifyDataSetChanged();
                 if(fragmentType == FRAGMENT_TYPE_HOME) {
                     getSupportFragmentManager().beginTransaction().detach(homeFragment).attach(homeFragment).commit();
-                } else if(fragmentType == FRAGMENT_TYPE_PROFILE){
+                } else if(fragmentType == FRAGMENT_TYPE_PROFILE) {
                     getSupportFragmentManager().beginTransaction().detach(profileFragment).attach(profileFragment).commit();
                 }else{
                     getSupportFragmentManager().beginTransaction().detach(savedFragment).attach(savedFragment).commit();

@@ -2,11 +2,13 @@ package pl.pollub.myrecommendation.fragments;
 
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -167,15 +169,62 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onCommentClickListener(View itemView, int position) {
+                Recommendation recommendation;
+                if(mainActivity.getFragmentType() == MainActivity.FRAGMENT_TYPE_SAVED){
+                    recommendation = savedRecommendationList.get(position);
+                }else{
+                    recommendation = recommendationList.get(position);
+                }
                 Intent intent = new Intent(getActivity(), CommentActivity.class);
+                intent.putExtra("recommendation_id", recommendation.getId());
+                intent.putExtra("recommendation_user_id", recommendation.getUserId());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onDeleteClickListener(View itemView, int position) {
                 String recommendationId = null;
                 if(mainActivity.getFragmentType() == MainActivity.FRAGMENT_TYPE_SAVED){
                     recommendationId = savedRecommendationList.get(position).getId();
                 }else{
                     recommendationId = recommendationList.get(position).getId();
                 }
-                intent.putExtra("recommendation_id", recommendationId);
-                startActivity(intent);
+
+                final String finalRecommendationId = recommendationId;
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                deleteRecommendation(finalRecommendationId);
+                                break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                //No button clicked
+                                break;
+                        }
+                    }
+                };
+
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("Are you sure to delete this recommendation?").setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
+
+            }
+
+            @Override
+            public void onUserClickListener(View itemView, int position) {
+                if(mainActivity.getFragmentType() == MainActivity.FRAGMENT_TYPE_SAVED) {
+                    String recommendationId = savedRecommendationList.get(position).getId();
+                    String userId = savedRecommendationList.get(position).getUserId();
+                    String categoryId = savedRecommendationList.get(position).getCategoryId();
+                    checkSaveRecommendation(recommendationId, userId, categoryId);
+                }else{
+                    String recommendationId = recommendationList.get(position).getId();
+                    String userId = recommendationList.get(position).getUserId();
+                    String categoryId = recommendationList.get(position).getCategoryId();
+                    checkSaveRecommendation(recommendationId, userId, categoryId);
+                }
             }
         });
         return view;
@@ -370,20 +419,21 @@ public class HomeFragment extends Fragment {
                             mFireStore.collection("Recommendation").document(recId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                 @Override
                                 public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                                    if(documentSnapshot.exists()){
+                                        Recommendation recommendation = new Recommendation();
+                                        recommendation.setId(documentSnapshot.getId());
+                                        recommendation.setUserId(documentSnapshot.get("user_id").toString());
+                                        recommendation.setIdea(documentSnapshot.get("idea").toString());
+                                        recommendation.setImageUri(Uri.parse(documentSnapshot.get("image_url").toString()));
+                                        recommendation.setRecommendationType(Integer.parseInt(documentSnapshot.get("recommendation_type").toString()));
+                                        recommendation.setCategoryId(documentSnapshot.get("category_id").toString());
+                                        recommendation.setTitle(documentSnapshot.get("title").toString());
+                                        recommendation.setDescription(documentSnapshot.get("description").toString());
+                                        recommendation.setTimstamp( (Date) documentSnapshot.get("timestamp"));
 
-                                    Recommendation recommendation = new Recommendation();
-                                    recommendation.setId(documentSnapshot.getId());
-                                    recommendation.setUserId(documentSnapshot.get("user_id").toString());
-                                    recommendation.setIdea(documentSnapshot.get("idea").toString());
-                                    recommendation.setImageUri(Uri.parse(documentSnapshot.get("image_url").toString()));
-                                    recommendation.setRecommendationType(Integer.parseInt(documentSnapshot.get("recommendation_type").toString()));
-                                    recommendation.setCategoryId(documentSnapshot.get("category_id").toString());
-                                    recommendation.setTitle(documentSnapshot.get("title").toString());
-                                    recommendation.setDescription(documentSnapshot.get("description").toString());
-                                    recommendation.setTimstamp( (Date) documentSnapshot.get("timestamp"));
-
-                                    savedRecommendationList.add(recommendation);
-                                    recommendationRecyclerAdapter.notifyDataSetChanged();
+                                        savedRecommendationList.add(recommendation);
+                                        recommendationRecyclerAdapter.notifyDataSetChanged();
+                                    }
                                 }
                             });
 
@@ -490,7 +540,7 @@ public class HomeFragment extends Fragment {
 
     }
 
-    private void checkSaveRecommendation(final String recommendationId, final String userId, final String categoryId){
+    public void checkSaveRecommendation(final String recommendationId, final String userId, final String categoryId){
         mFireStore.collection("Recommendation/" + recommendationId +"/saved_users").document(currentUserId)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -502,6 +552,18 @@ public class HomeFragment extends Fragment {
                             addSaveUserRecommendation(recommendationId, userId, categoryId);
                         }
                     }
+        });
+    }
+
+    private void deleteRecommendation(String recommendationId){
+        mFireStore.collection("Recommendation").document(recommendationId).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(!task.isSuccessful()){
+                    String error =  task.getException().getMessage().toString();
+                    Toast.makeText(mainActivity, "Error Delete: " + error, Toast.LENGTH_LONG).show();
+                }
+            }
         });
     }
 

@@ -26,13 +26,20 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.okhttp.internal.Internal;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import pl.pollub.myrecommendation.fragments.HomeFragment;
 import pl.pollub.myrecommendation.models.Category;
 import pl.pollub.myrecommendation.models.Recommendation;
 import pl.pollub.myrecommendation.models.User;
@@ -43,16 +50,18 @@ public class DetailRecommendationActivity extends AppCompatActivity implements V
     final int REQUEST_CALL = 22;
     private TextView tvTitle, tvDescription, tvIdea,
             tvLink, tvPhone, tvAddress, tvLocationLink,
-            tvUserName, tvTimeAgo, tvCategory;
+            tvUserName, tvTimeAgo, tvCategory, tvSaveCount,
+            tvCommentCount, tvComment;
 
-    private ImageView ivImage, ivLink, ivPin, ivPhone, ivLocationLink, ivProfilePicture;
+    private ImageView ivImage, ivLink, ivPin, ivPhone,
+            ivLocationLink, ivProfilePicture, ivComment, ivSave;
 
     private String recommendationId;
     private FirebaseAuth mAuth;
     private FirebaseFirestore mFireStore;
     private User currentUser = new User();
 
-    private String title, description, idea, imageUrl,
+    private String title, description, idea, imageUrl, userId, categoryId,
             websiteUrl, locationLink, locationId, phoneNumber, address;
     private int recommendationType;
     private double longitude, latitude;
@@ -80,6 +89,7 @@ public class DetailRecommendationActivity extends AppCompatActivity implements V
         tvLocationLink = findViewById(R.id.tvDetailRecLocationLink);
         tvUserName = findViewById(R.id.tvDetailRecUserName);
         tvCategory = findViewById(R.id.tvDetailRecCategory);
+        tvTimeAgo = findViewById(R.id.tvRecDetailTimeAgo);
 
         ivImage = findViewById(R.id.ivDetailRecImage);
         ivLink = findViewById(R.id.ivDetailRecLink);
@@ -87,11 +97,19 @@ public class DetailRecommendationActivity extends AppCompatActivity implements V
         ivPhone = findViewById(R.id.ivDetailRecPhone);
         ivLocationLink = findViewById(R.id.ivDetailRecLocationLink);
         ivProfilePicture = findViewById(R.id.ivDetailRecProfilePicture);
+        ivComment = findViewById(R.id.ivDetailRecComment);
+        ivSave = findViewById(R.id.ivDetailRecSave);
+        tvComment = findViewById(R.id.lblDetailRecComment);
+        tvSaveCount = findViewById(R.id.tvDetailRecSaveCount);
+        tvCommentCount = findViewById(R.id.tvDetailRecCommentCount);
 
         tvLocationLink.setOnClickListener(this);
         tvLink.setOnClickListener(this);
         tvPhone.setOnClickListener(this);
         tvAddress.setOnClickListener(this);
+        ivComment.setOnClickListener(this);
+        tvComment.setOnClickListener(this);
+        ivSave.setOnClickListener(this);
 
         loadUserInfo();
         loadRecommendation();
@@ -104,11 +122,14 @@ public class DetailRecommendationActivity extends AppCompatActivity implements V
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.getResult().exists()) {
                     DocumentSnapshot data = task.getResult();
+                    userId = MyUtil.getNullOrString(data.get("user_id"));
+                    categoryId = MyUtil.getNullOrString(data.get("category_id"));
                     title = MyUtil.getNullOrString(data.get("title"));
                     description = MyUtil.getNullOrString(data.get("description"));
                     idea = MyUtil.getNullOrString(data.get("idea"));
                     imageUrl = MyUtil.getNullOrString(data.get("image_url"));
                     recommendationType = Integer.parseInt(MyUtil.getNullOrString(data.get("recommendation_type")));
+                    Date timestamp = (Date) data.get("timestamp");
 
                     tvTitle.setText(title);
                     tvDescription.setText(description);
@@ -121,6 +142,12 @@ public class DetailRecommendationActivity extends AppCompatActivity implements V
                     RequestOptions placeholderOption = new RequestOptions().placeholder(R.color.gray);
                     Glide.with(DetailRecommendationActivity.this).applyDefaultRequestOptions(placeholderOption)
                             .load(Uri.parse(imageUrl)).into(ivImage);
+
+                    String strTimeAgo = null;
+                    if(timestamp != null){
+                        strTimeAgo = MyUtil.getTimeAgo(timestamp.getTime(), DetailRecommendationActivity.this);
+                    }
+                    tvTimeAgo.setText(strTimeAgo);
 
                     if (recommendationType == Recommendation.TYPE_LINK) {
                         websiteUrl = MyUtil.getNullOrString(data.get("website_url"));
@@ -162,8 +189,10 @@ public class DetailRecommendationActivity extends AppCompatActivity implements V
                         }
                     }
 
-                    loadRecommendationUser(data.get("user_id").toString());
-                    loadCategory(data.get("category_id").toString());
+                    loadRecommendationUser(userId);
+                    loadCategory(categoryId);
+                    bindCountSaveUser();
+                    bindCountComment();
                 }
             }
         });
@@ -181,6 +210,10 @@ public class DetailRecommendationActivity extends AppCompatActivity implements V
                     currentUser.setSex(data.get("sex").toString());
                     currentUser.setInterestedCategories((List<String>) data.get("interested_categories"));
 
+                }else{
+                    Intent intent = new Intent(DetailRecommendationActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
                 }
             }
         });
@@ -214,6 +247,55 @@ public class DetailRecommendationActivity extends AppCompatActivity implements V
         });
     }
 
+    private void bindCountSaveUser(){
+        // get likes
+
+        mFireStore.collection("Recommendation/" + recommendationId + "/saved_users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                int saveCountNumber = 0;
+                if(documentSnapshots != null){
+                    saveCountNumber = documentSnapshots.size();
+                }
+                String saveCountLabel = Integer.toString(saveCountNumber);
+                if(saveCountNumber > 1)  saveCountLabel = saveCountLabel + " Saves";
+                else  saveCountLabel = saveCountLabel + " Save";
+                tvSaveCount.setText(saveCountLabel);
+            }
+        });
+
+        mFireStore.collection("Recommendation/" + recommendationId + "/saved_users").document(currentUser.getId())
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                        if(documentSnapshot.exists()){
+                            ivSave.setImageDrawable(DetailRecommendationActivity.this.getDrawable(R.drawable.baseline_bookmark_black_36));
+                        }else{
+                            ivSave.setImageDrawable(DetailRecommendationActivity.this.getDrawable(R.drawable.baseline_bookmark_border_black_36));
+                        }
+                    }
+                });
+    }
+
+    private void bindCountComment(){
+        // get comments
+        mFireStore.collection("Recommendation/" + recommendationId + "/comments").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                int commentCount = 0;
+                if(documentSnapshots != null){
+                    commentCount = documentSnapshots.size();
+                }
+                String commentCountLabel = Integer.toString(commentCount);
+                if(commentCount > 1)  commentCountLabel = commentCountLabel + " Comments";
+                else  commentCountLabel = commentCountLabel + " Comment";
+                tvCommentCount.setText(commentCountLabel);
+            }
+        });
+
+
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -228,6 +310,15 @@ public class DetailRecommendationActivity extends AppCompatActivity implements V
                 break;
             case R.id.tvDetailRecPhone:
                 makePhoneCall();
+                break;
+            case R.id.ivDetailRecComment:
+                toComment();
+                break;
+            case R.id.lblDetailRecComment:
+                toComment();
+                break;
+            case R.id.ivDetailRecSave:
+                checkSaveRecommendation(recommendationId, currentUser.getId(), categoryId);
                 break;
         }
     }
@@ -274,6 +365,92 @@ public class DetailRecommendationActivity extends AppCompatActivity implements V
                 Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    public void toComment(){
+        Intent intent = new Intent(DetailRecommendationActivity.this, CommentActivity.class);
+        intent.putExtra("recommendation_id", recommendationId);
+        intent.putExtra("recommendation_user_id", userId);
+        startActivity(intent);
+    }
+
+    private void addSaveUserRecommendation(String recommendationId, String userId, String categoryId){
+
+        Map<String, Object> recommendationSavedMap = new HashMap<>();
+        recommendationSavedMap.put("user_id", currentUser.getId());
+        recommendationSavedMap.put("timestamp", FieldValue.serverTimestamp());
+        mFireStore.collection("Recommendation/" + recommendationId + "/saved_users").document(currentUser.getId()).set(recommendationSavedMap)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                       @Override
+                       public void onComplete(@NonNull Task<Void> task) {
+                           if(!task.isSuccessful()){
+                               String error = task.getException().getMessage();
+                               Toast.makeText(DetailRecommendationActivity.this, "FireStore Error: " + error, Toast.LENGTH_LONG).show();
+                           }
+                       }
+                   }
+                );
+
+        Map<String, Object> userSavedMap = new HashMap<>();
+        userSavedMap.put("recommendation_id", recommendationId);
+        userSavedMap.put("timestamp", FieldValue.serverTimestamp());
+        userSavedMap.put("category_id", categoryId);
+        mFireStore.collection("Users/" + currentUser.getId() +"/saved_recommendation").document(recommendationId).set(userSavedMap)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                       @Override
+                       public void onComplete(@NonNull Task<Void> task) {
+                           if(!task.isSuccessful()){
+                               String error = task.getException().getMessage();
+                               Toast.makeText(DetailRecommendationActivity.this, "FireStore Error: " + error, Toast.LENGTH_LONG).show();
+                           }
+                       }
+                   }
+                ) ;
+
+        saveNotification(recommendationId, userId);
+    }
+
+    private void saveNotification(String recommendationId, String userId){
+        if(userId.equals(currentUser.getId())) return;
+
+        Map<String, Object> notificationMap = new HashMap<>();
+        notificationMap.put("sender_id", currentUser.getId());
+        notificationMap.put("recommendation_id", recommendationId);
+        notificationMap.put("timestamp", FieldValue.serverTimestamp());
+        notificationMap.put("unseen", true);
+        notificationMap.put("type", 1);
+        mFireStore.collection("Users/" + userId +"/notification").document().set(notificationMap)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                       @Override
+                       public void onComplete(@NonNull Task<Void> task) {
+                           if(!task.isSuccessful()){
+                               String error = task.getException().getMessage();
+                               Toast.makeText(DetailRecommendationActivity.this, "FireStore Error: " + error, Toast.LENGTH_LONG).show();
+                           }
+                       }
+                   }
+                ) ;
+    }
+
+    private void deleteSaveUserRecommendation(final String recommendationId){
+        mFireStore.collection("Recommendation/" + recommendationId + "/saved_users" ).document(currentUser.getId()).delete();
+        mFireStore.collection("Users/" + currentUser.getId() + "/saved_recommendation").document(recommendationId).delete();
+
+    }
+
+    public void checkSaveRecommendation(final String recommendationId, final String userId, final String categoryId){
+        mFireStore.collection("Recommendation/" + recommendationId +"/saved_users").document(currentUser.getId())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful() && task.getResult().exists()){
+                            deleteSaveUserRecommendation(recommendationId);
+                        }else{
+                            addSaveUserRecommendation(recommendationId, userId, categoryId);
+                        }
+                    }
+                });
     }
 
 }

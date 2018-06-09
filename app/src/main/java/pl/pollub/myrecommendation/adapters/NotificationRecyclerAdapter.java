@@ -84,9 +84,9 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
             super(itemView);
             mView = itemView;
 
-            ivNotificationProfilePicture = mView.findViewById(R.id.ivCommentItemProfilePicture);
-            tvNotificationUserName = mView.findViewById(R.id.tvCommentItemUserName);
-            tvNotificationContent = mView.findViewById(R.id.tvCommentItemContent);
+            ivNotificationProfilePicture = mView.findViewById(R.id.ivNotificationProfilePicture);
+            tvNotificationUserName = mView.findViewById(R.id.tvNotificationUserName);
+            tvNotificationContent = mView.findViewById(R.id.tvNotificationContent);
             tvNotificationTimeAgo = mView.findViewById(R.id.tvNotificationTimeAgo);
             cvNotification = mView.findViewById(R.id.cvNotification);
 

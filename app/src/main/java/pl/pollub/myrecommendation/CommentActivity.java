@@ -1,7 +1,9 @@
 package pl.pollub.myrecommendation;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,8 +35,10 @@ import org.jsoup.helper.StringUtil;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import pl.pollub.myrecommendation.adapters.CommentRecyclerAdapter;
@@ -56,6 +60,8 @@ public class CommentActivity extends AppCompatActivity {
     private ArrayList<Comment> commentList;
     private User currentUser;
     private String recommendationId;
+    private String recommendationUserId;
+    private Set<String> commentUserIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +70,9 @@ public class CommentActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         recommendationId = intent.getStringExtra("recommendation_id");
+        recommendationUserId = intent.getStringExtra("recommendation_user_id");
+
+        commentUserIds = new HashSet<>();
 
         etComment = findViewById(R.id.etCommentInput);
         ivProfilePicture = findViewById(R.id.ivCommentProfilePicture);
@@ -82,7 +91,7 @@ public class CommentActivity extends AppCompatActivity {
         currentUser.setEmail(firebaseCurrentUser.getEmail());
         loadUserInfo();
         commentList = new ArrayList<>();
-        commentRecyclerAdapter = new CommentRecyclerAdapter(commentList);
+        commentRecyclerAdapter = new CommentRecyclerAdapter(commentList, currentUser.getId());
         rvComment.setLayoutManager(new LinearLayoutManager(CommentActivity.this));
         rvComment.setAdapter(commentRecyclerAdapter);
 
@@ -94,6 +103,30 @@ public class CommentActivity extends AppCompatActivity {
         });
 
         loadComment();
+
+        commentRecyclerAdapter.setOnItemClickListener(new CommentRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onDeleteClickListener(View itemView, final int position) {
+
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                deleteComment(recommendationId, commentList.get(position).getId(), position);
+                                break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                //No button clicked
+                                break;
+                        }
+                    }
+                };
+                AlertDialog.Builder builder = new AlertDialog.Builder(CommentActivity.this);
+                builder.setMessage("Are you sure to delete this comment?").setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
+
+            }
+        });
 
     }
 
@@ -116,6 +149,7 @@ public class CommentActivity extends AppCompatActivity {
         String comment = etComment.getText().toString();
 
         if(!TextUtils.isEmpty(comment)){
+            etComment.setText("");
             Map<String, Object> commentMap = new HashMap<>();
             commentMap.put("user_id", currentUser.getId());
             commentMap.put("content", comment);
@@ -128,9 +162,15 @@ public class CommentActivity extends AppCompatActivity {
                                    String error = task.getException().getMessage();
                                    Toast.makeText(CommentActivity.this, "FireStore Error: " + error, Toast.LENGTH_LONG).show();
                                }else{
-                                   etComment.setText("");
                                    commentRecyclerAdapter.notifyDataSetChanged();
+                                   // broadcast notification to recommendation poster and commentors
+                                   if(!recommendationUserId.equals(currentUser.getId())){
+                                       commentUserIds.add(recommendationUserId);
+                                   }
 
+                                   for(String commentUserId:commentUserIds){
+                                       saveNotification(recommendationId, commentUserId);
+                                   }
                                }
                            }
                        }
@@ -147,7 +187,6 @@ public class CommentActivity extends AppCompatActivity {
         query.addSnapshotListener(CommentActivity.this,new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
                 for(DocumentChange doc: documentSnapshots.getDocumentChanges()){
                     if(doc.getType() == DocumentChange.Type.ADDED){
                         Comment comment = new Comment();
@@ -156,10 +195,14 @@ public class CommentActivity extends AppCompatActivity {
                         comment.setTimestamp((Date) doc.getDocument().getData().get("timestamp"));
                         comment.setUserId(doc.getDocument().getData().get("user_id").toString());
                         commentList.add(comment);
+                        if(!comment.getUserId().equals(currentUser.getId())){
+                            commentUserIds.add(comment.getUserId());
+                        }
                     }
                 }
-                rvComment.scrollToPosition(commentList.size() - 1);
                 commentRecyclerAdapter.notifyDataSetChanged();
+                rvComment.scrollToPosition(commentList.size() - 1);
+
             }
         });
     }
@@ -168,6 +211,43 @@ public class CommentActivity extends AppCompatActivity {
         Intent loginIntent = new Intent(CommentActivity.this, LoginActivity.class);
         startActivity(loginIntent);
         finish();
+    }
+
+    private void saveNotification(String recommendationId, String userId){
+        //if(userId.equals(currentUser.getId())) return;
+
+        Map<String, Object> notificationMap = new HashMap<>();
+        notificationMap.put("sender_id", currentUser.getId());
+        notificationMap.put("recommendation_id", recommendationId);
+        notificationMap.put("timestamp", FieldValue.serverTimestamp());
+        notificationMap.put("unseen", true);
+        notificationMap.put("type", 2);
+        mFirestore.collection("Users/" + userId +"/notification").document().set(notificationMap)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                           @Override
+                                           public void onComplete(@NonNull Task<Void> task) {
+                                               if(!task.isSuccessful()){
+                                                   String error = task.getException().getMessage();
+                                                   Toast.makeText(CommentActivity.this, "FireStore Error: " + error, Toast.LENGTH_LONG).show();
+                                               }
+                                           }
+                                       }
+                ) ;
+    }
+
+    private void deleteComment(String recommendationId, String commentId, final int position){
+        mFirestore.collection("Recommendation/" + recommendationId + "/comments").document(commentId).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(!task.isSuccessful()){
+                    String error =  task.getException().getMessage().toString();
+                    Toast.makeText(CommentActivity.this, "Error Delete: " + error, Toast.LENGTH_LONG).show();
+                }else{
+                    commentList.remove(position);
+                    commentRecyclerAdapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
 
 }

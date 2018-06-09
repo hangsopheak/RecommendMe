@@ -13,12 +13,6 @@
         android:title="@string/lbl_left_interest" />
 
     <item
-        android:id="@+id/left_saved_recommendation"
-        android:icon="@drawable/baseline_bookmark_black_36"
-        android:title="@string/lbl_saved_recommendation"
-        />
-
-    <item
         android:id="@+id/left_logout"
         android:icon="@drawable/round_close_black_36dp"
         android:title="@string/lbl_left_logout"

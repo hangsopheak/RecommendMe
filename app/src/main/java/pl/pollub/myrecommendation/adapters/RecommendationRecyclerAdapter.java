@@ -62,6 +62,8 @@ public class RecommendationRecyclerAdapter extends RecyclerView.Adapter<Recommen
         void onImageClickListener(View itemView, int position);
         void onSaveClickListener(View itemView, int position);
         void onCommentClickListener(View itemView, int position);
+        void onDeleteClickListener(View itemView, int position);
+        void onUserClickListener(View itemView, int position);
     }
 
     // Define the method that allows the parent activity or fragment to define the listener
@@ -76,8 +78,6 @@ public class RecommendationRecyclerAdapter extends RecyclerView.Adapter<Recommen
         mFireStore = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         holder.bindData(recommendationList.get(position));
-
-
     }
 
 
@@ -90,8 +90,8 @@ public class RecommendationRecyclerAdapter extends RecyclerView.Adapter<Recommen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView tvTitle, tvIdea, tvDescription, tvSaveCount,
-                tvCommentCount, tvRecTime, tvCategoryName, tvUserName;
-        private ImageView ivRecImage, ivRecUserProfilePicture, ivSave, ivComment;
+                tvCommentCount, tvRecTime, tvCategoryName, tvUserName, tvCommentLabel;
+        private ImageView ivRecImage, ivRecUserProfilePicture, ivSave, ivComment, ivDelete;
         private View mView;
 
         public ViewHolder(final View itemView) {
@@ -104,10 +104,12 @@ public class RecommendationRecyclerAdapter extends RecyclerView.Adapter<Recommen
             tvDescription = mView.findViewById(R.id.tvRecDescription);
             tvSaveCount = mView.findViewById(R.id.tvRecSaveCount);
             tvCommentCount = mView.findViewById(R.id.tvRecCommentCount);
+            tvCommentLabel = mView.findViewById(R.id.tvRecCommentLabel);
             tvUserName = mView.findViewById(R.id.tvRecUserName);
             tvRecTime = mView.findViewById(R.id.tvRecPostTime);
             ivSave = mView.findViewById(R.id.ivRecSave);
             ivComment = mView.findViewById(R.id.ivRecComment);
+            ivDelete = mView.findViewById(R.id.ivRecommendationDelete);
 
             ivRecImage = mView.findViewById(R.id.ivRecImage);
             ivRecUserProfilePicture = mView.findViewById(R.id.ivRecProfilePicture);
@@ -116,6 +118,10 @@ public class RecommendationRecyclerAdapter extends RecyclerView.Adapter<Recommen
             ivRecImage.setOnClickListener(this);
             ivSave.setOnClickListener(this);
             ivComment.setOnClickListener(this);
+            ivDelete.setOnClickListener(this);
+            tvCommentLabel.setOnClickListener(this);
+            tvUserName.setOnClickListener(this);
+            ivRecUserProfilePicture.setOnClickListener(this);
 
         }
 
@@ -137,7 +143,7 @@ public class RecommendationRecyclerAdapter extends RecyclerView.Adapter<Recommen
                 description = description.substring(0, DESCRIPTION_LENGTH) + "...";
             }
             tvDescription.setText(description);
-            String strTimeAgo = null;
+            String strTimeAgo = "just now";
             if(recommendation.getTimstamp() != null){
                 strTimeAgo = MyUtil.getTimeAgo(recommendation.getTimstamp().getTime(), mContext);
             }
@@ -145,7 +151,11 @@ public class RecommendationRecyclerAdapter extends RecyclerView.Adapter<Recommen
             RequestOptions placeholderOption = new RequestOptions().placeholder(R.color.gray);
             Glide.with(mContext).applyDefaultRequestOptions(placeholderOption)
                     .load(recommendation.getImageUri()).into(ivRecImage);
-
+            if(recommendation.getUserId().equals(currentUserId)){
+                ivDelete.setVisibility(View.VISIBLE);
+            }else{
+                ivDelete.setVisibility(View.GONE);
+            }
 
         }
 
@@ -221,18 +231,6 @@ public class RecommendationRecyclerAdapter extends RecyclerView.Adapter<Recommen
                     tvCommentCount.setText(commentCountLabel);
                 }
             });
-
-            mFireStore.collection("Recommendation/" + recommendationId + "/saved_users").document(currentUserId)
-                    .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                            if(documentSnapshot.exists()){
-                                ivSave.setImageDrawable(mContext.getDrawable(R.drawable.baseline_bookmark_black_36));
-                            }else{
-                                ivSave.setImageDrawable(mContext.getDrawable(R.drawable.baseline_bookmark_border_black_36));
-                            }
-                        }
-                    });
         }
 
         @Override
@@ -267,6 +265,38 @@ public class RecommendationRecyclerAdapter extends RecyclerView.Adapter<Recommen
                         int position = getAdapterPosition();
                         if(position != RecyclerView.NO_POSITION){
                             listener.onCommentClickListener(itemView, position);
+                        }
+                    }
+                    break;
+                case R.id.ivRecommendationDelete:
+                    if(listener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            listener.onDeleteClickListener(itemView, position);
+                        }
+                    }
+                    break;
+                case R.id.tvRecCommentLabel:
+                    if(listener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            listener.onCommentClickListener(itemView, position);
+                        }
+                    }
+                    break;
+                case R.id.tvRecUserName:
+                    if(listener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            listener.onUserClickListener(itemView, position);
+                        }
+                    }
+                    break;
+                case R.id.ivRecProfilePicture:
+                    if(listener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            listener.onUserClickListener(itemView, position);
                         }
                     }
                     break;

@@ -266,11 +266,9 @@ public class ProfileSettingActivity extends AppCompatActivity implements View.On
         switch(i){
             case R.id.radioMale:
                 sex = User.SEX_MALE;
-                Toast.makeText(this, sex, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.radioFemale:
                 sex = User.SEX_FEMALE;
-                Toast.makeText(this, sex, Toast.LENGTH_SHORT).show();
                 break;
 
         }
