@@ -97,8 +97,11 @@ public class ProfileFragment extends Fragment {
                     if(data.get("sex").equals("F")) sex = "Female";
                     tvSex.setText(sex);
                     RequestOptions placeholderOption = new RequestOptions().placeholder(R.drawable.ic_launcher_background);
-                    Glide.with(getActivity()).applyDefaultRequestOptions(placeholderOption)
-                            .load(Uri.parse(data.get("profile_picture").toString())).into(ivProfilePicture);
+                    if(getActivity() != null){
+                        Glide.with(getActivity()).applyDefaultRequestOptions(placeholderOption)
+                                .load(Uri.parse(data.get("profile_picture").toString())).into(ivProfilePicture);
+
+                    }
 
                 }
             }

@@ -51,7 +51,7 @@
             app:backgroundTint="@color/colorPrimary"
             app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@android:drawable/ic_input_add" />
+            app:srcCompat="@drawable/baseline_add_white_36dp" />
 
         <View
             android:id="@+id/view"

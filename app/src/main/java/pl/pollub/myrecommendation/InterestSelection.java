@@ -55,9 +55,12 @@ public class InterestSelection extends AppCompatActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_interest_selection);
 
-        interestedCategoriesArray = getIntent().getStringArrayExtra("interested_categories");
         isFromMain = getIntent().getBooleanExtra("from_main", false);
-
+        if(isFromMain){
+            interestedCategoriesArray = getIntent().getStringArrayExtra("interested_categories");
+        }else{
+            interestedCategoriesArray = new String[0];
+        }
         mAuth = FirebaseAuth.getInstance();
         mFireStore = FirebaseFirestore.getInstance();
 

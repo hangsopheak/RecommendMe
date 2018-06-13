@@ -43,6 +43,7 @@ import pl.pollub.myrecommendation.adapters.NotificationRecyclerAdapter;
 import pl.pollub.myrecommendation.adapters.RecommendationRecyclerAdapter;
 import pl.pollub.myrecommendation.models.Notification;
 import pl.pollub.myrecommendation.models.Recommendation;
+import pl.pollub.myrecommendation.models.User;
 import pl.pollub.myrecommendation.utils.MyUtil;
 
 import static android.widget.LinearLayout.HORIZONTAL;
@@ -127,18 +128,31 @@ public class NotificationFragment extends Fragment {
                         lastVisible = documentSnapshots.getDocuments().get(documentSnapshots.size() -1);
                     }
                 }
-                for(DocumentChange doc: documentSnapshots.getDocumentChanges()){
+                for(final DocumentChange doc: documentSnapshots.getDocumentChanges()){
                     if(doc.getType() == DocumentChange.Type.ADDED){
-                        final Notification notification = mapNotification(doc);
-                        if(isNotificationFirstLoad){
-                            notificationList.add(notification);
-                        }else{
-                            notificationList.add(0,notification);
-                        }
+                        mFireStore.collection("Users").document(doc.getDocument().get("sender_id").toString())
+                                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if(task.getResult().exists() && task.isSuccessful()){
+                                    Notification notification = mapNotification(doc);
+                                    DocumentSnapshot data = task.getResult();
+                                    notification.setSender(mapUser(data));
+                                    if(isNotificationFirstLoad){
+                                        notificationList.add(notification);
+                                    }else{
+                                        notificationList.add(0,notification);
+                                    }
+                                    notificationRecyclerAdapter.notifyDataSetChanged();
+                                    isNotificationFirstLoad = false;
+                                }
+                            }
+                        });
+
+
                     }
                 }
-                notificationRecyclerAdapter.notifyDataSetChanged();
-                isNotificationFirstLoad = false;
+
             }
         });
         return view;
@@ -157,15 +171,28 @@ public class NotificationFragment extends Fragment {
                 if(documentSnapshots != null){
                     if(documentSnapshots.size() > 0)
                         lastVisible = documentSnapshots.getDocuments().get(documentSnapshots.size() -1);
-                    for(DocumentChange doc: documentSnapshots.getDocumentChanges()){
+                    for(final DocumentChange doc: documentSnapshots.getDocumentChanges()){
                         if(doc.getType() == DocumentChange.Type.ADDED){
-                            final Notification notification = mapNotification(doc);
-                            notificationList.add(notification);
+                             final Notification notification = mapNotification(doc);
+
+                            mFireStore.collection("Users").document(doc.getDocument().get("sender_id").toString())
+                                    .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if(task.getResult().exists() && task.isSuccessful()){
+                                        Notification notification = mapNotification(doc);
+                                        DocumentSnapshot data = task.getResult();
+                                        notification.setSender(mapUser(data));
+                                        notificationList.add(notification);
+                                        notificationRecyclerAdapter.notifyDataSetChanged();
+                                        isNotificationFirstLoad = false;
+                                    }
+                                }
+                            });
+
                         }
                     }
-                    notificationRecyclerAdapter.notifyDataSetChanged();
-                    isNotificationFirstLoad = false;
-                }else{
+
                 }
             }
         });
@@ -181,6 +208,14 @@ public class NotificationFragment extends Fragment {
         notification.setUnseen((boolean) changedData.get("unseen"));
         notification.setTimestamp((Date) changedData.get("timestamp"));
         return notification;
+    }
+
+    private User mapUser(DocumentSnapshot data){
+        User sender = new User();
+        sender.setId(data.getId());
+        sender.setName(data.get("name").toString());
+        sender.setProfilePicture(data.get("profile_picture").toString());
+        return sender;
     }
 
     public interface OnFragmentInteractionListener {

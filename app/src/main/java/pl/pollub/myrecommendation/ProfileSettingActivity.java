@@ -129,7 +129,7 @@ public class ProfileSettingActivity extends AppCompatActivity implements View.On
                         placeholderRequest.placeholder(R.drawable.profile);
                         Glide.with(ProfileSettingActivity.this).setDefaultRequestOptions(placeholderRequest).load(imageURI).into(ivProfilePicture);
                     }else{
-                        Toast.makeText(ProfileSettingActivity.this, "Data does not exist", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(ProfileSettingActivity.this, "Data does not exist", Toast.LENGTH_SHORT).show();
                     }
                 }else{
                     String error = task.getException().getMessage();

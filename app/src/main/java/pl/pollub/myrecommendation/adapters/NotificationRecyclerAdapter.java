@@ -23,6 +23,7 @@ import java.util.List;
 
 import pl.pollub.myrecommendation.R;
 import pl.pollub.myrecommendation.models.Notification;
+import pl.pollub.myrecommendation.models.User;
 import pl.pollub.myrecommendation.utils.MyUtil;
 
 public class NotificationRecyclerAdapter extends RecyclerView.Adapter<NotificationRecyclerAdapter.ViewHolder> {
@@ -95,9 +96,8 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
         }
 
         public void bindData(Notification notification){
-            bindUser(notification.getSenderId());
+            bindUser(notification.getSender());
             bindNotification(notification);
-
         }
 
         private void bindNotification(Notification notification) {
@@ -110,19 +110,12 @@ public class NotificationRecyclerAdapter extends RecyclerView.Adapter<Notificati
         }
 
 
-        private void bindUser(String userId){
-            mFireStore.collection("Users").document(userId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if(task.getResult().exists() && task.isSuccessful()){
-                        DocumentSnapshot data = task.getResult();
-                        tvNotificationUserName.setText(data.get("name").toString());
-                        RequestOptions placeholderOption = new RequestOptions().placeholder(R.color.gray);
-                        Glide.with(mContext).applyDefaultRequestOptions(placeholderOption)
-                                .load(Uri.parse(data.get("profile_picture").toString())).into(ivNotificationProfilePicture);
-                    }
-                }
-            });
+        private void bindUser(User user){
+            tvNotificationUserName.setText(user.getName());
+            RequestOptions placeholderOption = new RequestOptions().placeholder(R.color.gray);
+            Glide.with(mContext).applyDefaultRequestOptions(placeholderOption)
+                    .load(Uri.parse(user.getProfilePicture())).into(ivNotificationProfilePicture);
+
         }
 
 
