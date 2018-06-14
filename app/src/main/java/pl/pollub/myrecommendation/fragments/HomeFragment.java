@@ -32,6 +32,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -62,6 +63,7 @@ public class HomeFragment extends Fragment {
     private DocumentSnapshot lastVisible;
     private DocumentSnapshot lastSavedVisible;
     private boolean isFirstPageFirstLoad;
+    private boolean isSavedFirstPageLoad;
     private String categoryId;
     private String currentUserId;
     private String profileUserId;
@@ -89,6 +91,8 @@ public class HomeFragment extends Fragment {
         currentUserId = mainActivity.getCurrentUserId();
 
         isFirstPageFirstLoad = true;
+        isSavedFirstPageLoad = true;
+
         lastSavedVisible = null;
         lastVisible = null;
 
@@ -256,9 +260,10 @@ public class HomeFragment extends Fragment {
         firstQuery.addSnapshotListener(getActivity(),new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                if(isFirstPageFirstLoad && documentSnapshots != null){
+                if(isSavedFirstPageLoad && documentSnapshots != null){
                     if(documentSnapshots.size() > 0){
                         lastVisible = documentSnapshots.getDocuments().get(documentSnapshots.size() -1);
+                        recommendationList.clear();
                     }
                 }
                 if(documentSnapshots == null){
@@ -268,16 +273,17 @@ public class HomeFragment extends Fragment {
                 for(DocumentChange doc: documentSnapshots.getDocumentChanges()){
                     if(doc.getType() == DocumentChange.Type.ADDED){
                         final Recommendation recommendation = mapRecommendation(doc);
-                        if(isFirstPageFirstLoad){
+                        if(isSavedFirstPageLoad){
                             recommendationList.add(recommendation);
                         }else{
                             recommendationList.add(0,recommendation);
                         }
+                        recommendationRecyclerAdapter.notifyDataSetChanged();
+                        progressBar.setVisibility(View.INVISIBLE);
                     }
                 }
-                recommendationRecyclerAdapter.notifyDataSetChanged();
-                progressBar.setVisibility(View.INVISIBLE);
-                isFirstPageFirstLoad = false;
+                isSavedFirstPageLoad = false;
+
 
             }
         });
@@ -302,7 +308,7 @@ public class HomeFragment extends Fragment {
         firstQuery.addSnapshotListener(getActivity(),new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                if(isFirstPageFirstLoad && documentSnapshots != null){
+                if(isSavedFirstPageLoad && documentSnapshots != null){
                     if(documentSnapshots.size() > 0){
                         lastSavedVisible = documentSnapshots.getDocuments().get(documentSnapshots.size() -1);
                     }
@@ -317,30 +323,34 @@ public class HomeFragment extends Fragment {
                         mFireStore.collection("Recommendation").document(recId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                             @Override
                             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-
                                 Recommendation recommendation = new Recommendation();
-                                recommendation.setId(documentSnapshot.getId());
-                                recommendation.setUserId(documentSnapshot.get("user_id").toString());
-                                recommendation.setIdea(documentSnapshot.get("idea").toString());
-                                recommendation.setImageUri(Uri.parse(documentSnapshot.get("image_url").toString()));
-                                recommendation.setRecommendationType(Integer.parseInt(documentSnapshot.get("recommendation_type").toString()));
-                                recommendation.setCategoryId(documentSnapshot.get("category_id").toString());
-                                recommendation.setTitle(documentSnapshot.get("title").toString());
-                                recommendation.setDescription(documentSnapshot.get("description").toString());
-                                recommendation.setTimstamp( (Date) documentSnapshot.get("timestamp"));
+                                if(documentSnapshot.exists()){
+                                    recommendation.setId(documentSnapshot.getId());
+                                    recommendation.setUserId(documentSnapshot.get("user_id").toString());
+                                    recommendation.setIdea(documentSnapshot.get("idea").toString());
+                                    recommendation.setImageUri(Uri.parse(documentSnapshot.get("image_url").toString()));
+                                    recommendation.setRecommendationType(Integer.parseInt(documentSnapshot.get("recommendation_type").toString()));
+                                    recommendation.setCategoryId(documentSnapshot.get("category_id").toString());
+                                    recommendation.setTitle(documentSnapshot.get("title").toString());
+                                    recommendation.setDescription(documentSnapshot.get("description").toString());
+                                    recommendation.setTimstamp( (Date) documentSnapshot.get("timestamp"));
 
-                                if(isFirstPageFirstLoad){
-                                    savedRecommendationList.add(recommendation);
-                                }else{
-                                    savedRecommendationList.add(0,recommendation);
+                                    if(isFirstPageFirstLoad){
+                                        savedRecommendationList.add(recommendation);
+                                    }else{
+                                        savedRecommendationList.add(0,recommendation);
+                                    }
+                                    recommendationRecyclerAdapter.notifyDataSetChanged();
+
                                 }
-                                recommendationRecyclerAdapter.notifyDataSetChanged();
+
                             }
                         });
                     }
                 }
+                isSavedFirstPageLoad = false;
                 progressBar.setVisibility(View.INVISIBLE);
-                isFirstPageFirstLoad = false;
+
 
             }
         });
@@ -378,12 +388,11 @@ public class HomeFragment extends Fragment {
                         if(doc.getType() == DocumentChange.Type.ADDED){
                             final Recommendation recommendation = mapRecommendation(doc);
                             recommendationList.add(recommendation);
-
+                            recommendationRecyclerAdapter.notifyDataSetChanged();
+                            isFirstPageFirstLoad = false;
                         }
                     }
-                    recommendationRecyclerAdapter.notifyDataSetChanged();
                     progressBar.setVisibility(View.INVISIBLE);
-                    isFirstPageFirstLoad = false;
                 }else{
                     progressBar.setVisibility(View.INVISIBLE);
                 }
@@ -559,9 +568,9 @@ public class HomeFragment extends Fragment {
         mFireStore.collection("Recommendation").document(recommendationId).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                if(!task.isSuccessful()){
-                    String error =  task.getException().getMessage().toString();
-                    Toast.makeText(mainActivity, "Error Delete: " + error, Toast.LENGTH_LONG).show();
+                if(task.isSuccessful()){
+                    isFirstPageFirstLoad = true;
+                    loadFirstRecommendation();
                 }
             }
         });
